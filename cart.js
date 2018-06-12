@@ -1,8 +1,8 @@
 /**
  * BCLearningNetwork.com
- * Game Name   
+ * Ballistic Cart   
  * @author Parsa Rajabi - ParsaRajabiPR@gmail.com
- * Date
+ * June 2018
  */
 
 //// VARIABLES ////
@@ -12,6 +12,7 @@ var FPS = 20;
 var STAGE_WIDTH, STAGE_HEIGHT;
 var gameStarted = false;
 
+var move = 40; //m/s
 
 // Chrome 1+
 var isChrome = !!window.chrome && !!window.chrome.webstore;
@@ -39,8 +40,19 @@ function init() {
 
 
 function update(event) {
-    if (gameStarted) {}
-
+    if (gameStarted) {
+        
+    Cart.x += move;
+        if (Cart.x == 800){
+            console.log("WOW");
+            Cart.x = -160;
+        Cart.x += move;
+        }
+        
+        
+        
+        
+    }
     stage.update(event);
 }
 
@@ -60,7 +72,14 @@ function initGraphics() {
 
     initMuteUnMuteButtons();
     initListeners();
-
+    
+    Cart.x = -160;
+    Cart.y = 300;
+    
+    Earth.image.style.opacity = 0; 
+    stage.addChild(Earth);
+    stage.addChild(Cart);
+    
     // start the game
     gameStarted = true;
     stage.update();
@@ -100,16 +119,29 @@ function initListeners() {
 
 // bitmap variables
 var muteButton, unmuteButton;
+var Earth, Mars, Moon;
+var Cart;
 /*
  * Add files to be loaded here.
  */
 function setupManifest() {
     manifest = [
-       {
+         {
+            src: "images/Cart.png",
+            id: "Cart"
+    },{
+            src: "images/Earth_Background.png",
+            id: "Earth"
+    }, {
+            src: "images/Mars_Background.png",
+            id: "Mars"
+    }, {
+            src: "images/Moon_Background.png",
+            id: "Moon"
+    },{
             src: "images/mute.png",
             id: "mute"
-    },
-        {
+    },{
             src: "images/unmute.png",
             id: "unmute"
     }
@@ -137,7 +169,15 @@ function handleFileLoad(event) {
         muteButton = new createjs.Bitmap(event.result);
     } else if (event.item.id == "unmute") {
         unmuteButton = new createjs.Bitmap(event.result);
-    } 
+    } else if (event.item.id == "Earth") {
+        Earth = new createjs.Bitmap(event.result);
+    } else if (event.item.id == "Mars") {
+        Mars = new createjs.Bitmap(event.result);
+    } else if (event.item.id == "Moon") {
+        Moon = new createjs.Bitmap(event.result);
+    }  else if (event.item.id == "Cart") {
+        Cart = new createjs.Bitmap(event.result);
+    }
 }
 
 function loadError(evt) {
@@ -159,7 +199,7 @@ function loadComplete(event) {
     createjs.Ticker.setFPS(FPS);
     createjs.Ticker.addEventListener("tick", update); // call update function
 
-    stage.addChild(background);
+//    stage.addChild(background);
     stage.update();
     initGraphics();
 }
