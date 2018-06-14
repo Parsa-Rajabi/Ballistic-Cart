@@ -1,7 +1,7 @@
 /**
  * BCLearningNetwork.com
  * Ballistic Cart   
- * @author Parsa Rajabi - ParsaRajabiPR@gmail.com
+ * Parsa Rajabi - ParsaRajabiPR@gmail.com
  * June 2018
  */
 
@@ -11,8 +11,14 @@ var mute = false;
 var FPS = 20;
 var STAGE_WIDTH, STAGE_HEIGHT;
 var gameStarted = false;
+var planetText;
+var move = 20; //m/s
+let selectY = 70; // works well on firefox
 
-var move = 40; //m/s
+var planetOptionValues = [];
+planetOptionValues['Earth'];
+planetOptionValues['Moon'];
+planetOptionValues['Mars'];
 
 // Chrome 1+
 var isChrome = !!window.chrome && !!window.chrome.webstore;
@@ -41,17 +47,14 @@ function init() {
 
 function update(event) {
     if (gameStarted) {
-        
+//moves cart with speed of variable "move"
     Cart.x += move;
+        //loops back the cart back around after exiting from one side to other  
         if (Cart.x == 800){
             console.log("WOW");
             Cart.x = -160;
         Cart.x += move;
         }
-        
-        
-        
-        
     }
     stage.update(event);
 }
@@ -74,18 +77,101 @@ function initGraphics() {
     initListeners();
     
     Cart.x = -160;
-    Cart.y = 300;
+    Cart.y = 350;
     
-    Earth.image.style.opacity = 0; 
+    //default planet is Earth
     stage.addChild(Earth);
+
     stage.addChild(Cart);
+  
+    //Box Selection   
+    var planetSelectHTML = document.createElement('select');
+ 	planetSelectHTML.id = "planetSelect";
+ 	planetSelectHTML.class = "overlayed";
+ 	var planetOption = ["Earth", "Moon", "Mars"];
+ 	addOptionsToSelect(planetSelectHTML, planetOption);
+  	planetSelectHTML.style.position = "absolute";
+ 	planetSelectHTML.style.top = 0;
+  	planetSelectHTML.style.left = 0;
+ 	planetSelectHTML.style.width = "70px";
+  	planetSelectHTML.onchange = updatePlanet;
+  	document.body.appendChild(planetSelectHTML);
+  	planetSelect = new createjs.DOMElement(planetSelectHTML);
+
+  	stage.addChild(planetSelect);
+
+//    planetSelect.x = 120;
+//    planetSelect.y = 50
+  	updateSelectPositions();
+
+    planetText = new createjs.Text("Planet: ", "23px Lato", "#ffffff");
+    
+    //implement this into the background 
+    planetText.x = planetSelect.x ;
+    planetText.y = planetSelect.y ;
+    stage.addChild(planetText);
     
     // start the game
     gameStarted = true;
     stage.update();
 }
+/*
+ * Maintain positions of select HTML elements when page is zoomed or canvas is moved
+ */
+function updateSelectPositions() {
+  if (isChrome) {
+    selectY = 70;
+  }
+
+  planetSelect.x = gameCanvas.getBoundingClientRect().left + 100;
+  planetSelect.y = gameCanvas.getBoundingClientRect().top + selectY;
+
+ 
+}
 
 
+
+function addAll(){
+    stage.addChild(planetText);
+    stage.addChild(Cart);
+    initMuteUnMuteButtons();
+
+}
+
+//Adds the options to the drop down lists 
+
+function addOptionsToSelect(select, options) {
+  for (var i = 0; i < options.length; i++) {
+    var option = document.createElement('option');
+    option.value = options[i];
+    option.text = options[i];
+    select.appendChild(option);
+  }
+}
+
+function updatePlanet(){
+
+    if (planetSelect.htmlElement.value == "Earth") {
+        stage.removeChild(Moon);
+        stage.removeChild(Mars);
+        stage.addChild(Earth);
+        addAll();
+
+  } else if (planetSelect.htmlElement.value == "Moon") {
+        stage.removeChild(Earth);
+        stage.removeChild(Mars);  
+        stage.addChild(Moon);
+        addAll();
+  
+
+  } else if (planetSelect.htmlElement.value == "Mars") {
+        stage.removeChild(Earth);
+        stage.removeChild(Moon);     
+        stage.addChild(Mars);
+        addAll();
+
+  }
+}
 /*
  * Adds the mute and unmute buttons to the stage and defines listeners
  */
@@ -205,3 +291,4 @@ function loadComplete(event) {
 }
 
 ///////////////////////////////////// END PRELOADJS FUNCTIONS
+
