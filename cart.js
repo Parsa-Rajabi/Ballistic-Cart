@@ -104,12 +104,17 @@ function initGraphics() {
 //    planetSelect.y = 50
   	updateSelectPositions();
 
+    //planet Text
     planetText = new createjs.Text("Planet: ", "23px Lato", "#ffffff");
-    
     //implement this into the background 
     planetText.x = planetSelect.x ;
     planetText.y = planetSelect.y ;
     stage.addChild(planetText);
+    
+    fireButton.x = firePressedButton.x = 500;
+    fireButton.y = firePressedButton.y = 500;
+    stage.addChild(fireButton);
+    
     
     // start the game
     gameStarted = true;
@@ -134,6 +139,7 @@ function updateSelectPositions() {
 function addAll(){
     stage.addChild(planetText);
     stage.addChild(Cart);
+    stage.addChild(fireButton);
     initMuteUnMuteButtons();
 
 }
@@ -196,7 +202,22 @@ function initMuteUnMuteButtons() {
  * Add listeners to objects.
  */
 function initListeners() {
+    
+    fireButton.on("mouseover", function () {
+        stage.addChild(firePressedButton);
+        stage.removeChild(fireButton);
+    });
+    firePressedButton.on("mouseout", function () {
+        stage.addChild(fireButton);
+        stage.removeChild(firePressedButton);
+    });
+    firePressedButton.on("click", fire);
 
+
+}
+
+function fire(){
+    console.log (" Fired!");
 }
 
 
@@ -207,6 +228,7 @@ function initListeners() {
 var muteButton, unmuteButton;
 var Earth, Mars, Moon;
 var Cart;
+var fireButton, firePressedButton;
 /*
  * Add files to be loaded here.
  */
@@ -230,7 +252,13 @@ function setupManifest() {
     },{
             src: "images/unmute.png",
             id: "unmute"
-    }
+    },{
+			src: "images/fire_btn.png",
+			id: "fireButton"
+    },{
+			src: "images/firePressed.png",
+			id: "firePressedButton"
+		},
  	];
 }
 
@@ -263,7 +291,11 @@ function handleFileLoad(event) {
         Moon = new createjs.Bitmap(event.result);
     }  else if (event.item.id == "Cart") {
         Cart = new createjs.Bitmap(event.result);
-    }
+    } else if (event.item.id == "fireButton"){
+        fireButton = new createjs.Bitmap(event.result);
+    }else if (event.item.id == "firePressedButton"){
+        firePressedButton = new createjs.Bitmap(event.result);
+}
 }
 
 function loadError(evt) {
