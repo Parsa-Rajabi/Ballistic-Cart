@@ -12,7 +12,14 @@ var FPS = 20;
 var STAGE_WIDTH, STAGE_HEIGHT;
 var gameStarted = false;
 var move = 5; //m/s
-let selectY = 85; // works well on firefox
+var selectY = 85; // works well on firefox
+var ball;
+var intialY = 397;
+var earthGrav = 9.81;
+var moonGrav = 1.62;
+var marsGrav = 3.71;
+var bulletTimer;
+
 
 var planetOptionValues = [];
 planetOptionValues['Earth'];
@@ -48,13 +55,18 @@ function init() {
  * Main update loop.
  */
 
-
 function update(event) {
     if (gameStarted) {
+//         cart.x = -160;
+        cart.y = 350;
         //moves cart with speed of variable "move"
-        Cart.x += move;
-        console.log("Cart X is " + Cart.x);
+        cart.x += move;
+        console.log("Cart X is " + cart.x);
         loopCart();
+        
+        ball.y -= 5;
+//    bulletTime = bulletTime + 50; //milliseconds past since button hit
+//	t = bulletTime * 0.00015; //scaling factor to slow down time
 
     }
             stage.update(event);
@@ -69,29 +81,17 @@ function endGame() {
 }
 
 
-function loopCart() {
-    //loops back the cart back around after exiting from one side to other  
-    Cart.x += move;
-    if (Cart.x >= 800) {
-        console.log("In the loop");
-        Cart.x = -160;
-        Cart.x += move;
-    }
-}
 
 /*
  * Place graphics and add them to the stage.
  */
 function initGraphics() {
 
-
-
-    Cart.x = -160;
-    Cart.y = 350;
+   
 
     //default planet is Earth
     stage.addChild(Earth);
-    stage.addChild(Cart);
+    stage.addChild(cart);
 
     //Box Selection   
     var planetSelectHTML = document.createElement('select');
@@ -128,9 +128,15 @@ function initGraphics() {
     updateSelectPositions();
 
 
-
-    fireButton.x = firePressedButton.x = -6.5;
-    fireButton.y = firePressedButton.y = 200;
+    ball = new createjs.Shape();
+    ball.graphics.beginFill("red").drawCircle(0, 0, 15);
+//    ball.x = 500;
+    ball.y = intialY;
+    stage.addChild(ball);
+//    ball.visible = false;
+    
+    fireButton.x = firePressedButton.x = 30;
+    fireButton.y = firePressedButton.y = 170;
     stage.addChild(fireButton);
 
     initMuteUnMuteButtons();
@@ -139,9 +145,23 @@ function initGraphics() {
     gameStarted = true;
     stage.update();
 }
+
+
+function loopCart() {
+    //loops back the cart back around after exiting from one side to other  
+    cart.x += move;
+    ball.x = cart.x + 55;
+    if (cart.x >= 800) {
+        console.log("In the loop");
+        ball.x = cart.x = -160;
+        ball.x = cart.x += move;
+    }
+}
+
 /*
  * Maintain positions of select HTML elements when page is zoomed or canvas is moved
  */
+
 function updateSelectPositions() {
     if (isChrome) {
         selectY = 85;
@@ -159,8 +179,11 @@ function updateSelectPositions() {
 }
 
 function addAll() {
-    stage.addChild(Cart);
+    stage.addChild(cart);
     stage.addChild(fireButton);
+    stage.addChild(unmuteButton);
+    stage.addChild(ball);
+
 //    stage.addChildAt(Cart,0);
 //    stage.addChildAt(fireButton,);
 
@@ -252,6 +275,7 @@ function initListeners() {
     fireButton.on("mouseover", function () {
         stage.addChild(firePressedButton);
         stage.removeChild(fireButton);
+        playSound("click");
     });
     firePressedButton.on("mouseout", function () {
         stage.addChild(fireButton);
@@ -259,11 +283,19 @@ function initListeners() {
     });
     firePressedButton.on("click", fire);
 
-
+    
 }
 
 function fire() {
-    console.log("Shots Fired!");
+    playSound("blast");
+//    ball.visible = true;
+//    console.log("Shots Fired!");
+//    ball.y -= earthGrav+60; 
+//    ball.y = intialY - 100* 5 + 0.5*-9.8;
+//    ball.x = Math.cos(40)+100; 
+    
+    bulletTimer = setInterval(update(Event), 50);
+		bulletTime = 0;
 }
 
 
@@ -273,7 +305,7 @@ function fire() {
 // bitmap variables
 var muteButton, unmuteButton;
 var Earth, Mars, Moon;
-var Cart;
+var cart;
 var fireButton, firePressedButton;
 /*
  * Add files to be loaded here.
@@ -281,8 +313,14 @@ var fireButton, firePressedButton;
 function setupManifest() {
     manifest = [
         {
-            src: "images/Cart.png",
-            id: "Cart"
+            src: "sounds/click.mp3",
+            id: "click"
+    },{
+            src: "sounds/blast.mp3",
+            id: "blast"
+    },{
+            src: "images/cart.png",
+            id: "cart"
     }, {
             src: "images/Earth_Background.png",
             id: "Earth"
@@ -299,10 +337,10 @@ function setupManifest() {
             src: "images/unmute_white.png",
             id: "unmute"
     }, {
-            src: "images/fire_btn.png",
+            src: "images/fireButton.png",
             id: "fireButton"
     }, {
-            src: "images/firePressed.png",
+            src: "images/firePressedButton.png",
             id: "firePressedButton"
 		},
  	];
@@ -335,8 +373,8 @@ function handleFileLoad(event) {
         Mars = new createjs.Bitmap(event.result);
     } else if (event.item.id == "Moon") {
         Moon = new createjs.Bitmap(event.result);
-    } else if (event.item.id == "Cart") {
-        Cart = new createjs.Bitmap(event.result);
+    } else if (event.item.id == "cart") {
+        cart = new createjs.Bitmap(event.result);
     } else if (event.item.id == "fireButton") {
         fireButton = new createjs.Bitmap(event.result);
     } else if (event.item.id == "firePressedButton") {
