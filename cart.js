@@ -12,13 +12,19 @@ var FPS = 20;
 var STAGE_WIDTH, STAGE_HEIGHT;
 var gameStarted = false;
 var move = 5; //m/s
+var velocity = 10;
 var selectY = 85; // works well on firefox
 var ball;
-var intialY = 397;
+var initialY = 397;
+var ground = 520;
 var earthGrav = 9.81;
 var moonGrav = 1.62;
 var marsGrav = 3.71;
 var bulletTimer;
+var direction = true;
+// direction true = up, false = down
+var launchingPoint = true;
+// direction true = up, false = down
 
 
 var planetOptionValues = [];
@@ -61,10 +67,25 @@ function update(event) {
         cart.y = 350;
         //moves cart with speed of variable "move"
         cart.x += move;
-        console.log("Cart X is " + cart.x);
+//        console.log("Cart X is " + cart.x);
         loopCart();
-        
-        ball.y -= 5;
+
+        //direction = up = true
+        // direction = down = false
+        if (direction){
+            ball.y -= velocity;   
+            console.log(velocity + "is going up")
+        }else{
+            console.log(velocity + "is going down")
+                ball.y += velocity;
+            if (ball.y > ground){
+                ball.y = ground;
+            }
+        }
+        if (ball.y  < 100){ 
+        direction = false;
+        }
+//            ball.y +=5;
 //    bulletTime = bulletTime + 50; //milliseconds past since button hit
 //	t = bulletTime * 0.00015; //scaling factor to slow down time
 
@@ -131,7 +152,7 @@ function initGraphics() {
     ball = new createjs.Shape();
     ball.graphics.beginFill("red").drawCircle(0, 0, 15);
 //    ball.x = 500;
-    ball.y = intialY;
+    ball.y = initialY;
     stage.addChild(ball);
 //    ball.visible = false;
     
@@ -205,12 +226,16 @@ function addOptionsToSelect(select, options) {
 function updatePlanet() {
 
     if (planetSelect.htmlElement.value == "Earth") {
+        velocity = 15;
+        console.log(velocity + "on Earth")
         stage.removeChild(Moon);
         stage.removeChild(Mars);
         stage.addChild(Earth);
         addAll();
 
     } else if (planetSelect.htmlElement.value == "Moon") {
+        velocity = 5;
+        console.log(velocity + "on Moon")
         stage.removeChild(Earth);
         stage.removeChild(Mars);
         stage.addChild(Moon);
@@ -218,6 +243,8 @@ function updatePlanet() {
 
 
     } else if (planetSelect.htmlElement.value == "Mars") {
+        velocity = 10;
+        console.log(velocity + "on Mars")
         stage.removeChild(Earth);
         stage.removeChild(Moon);
         stage.addChild(Mars);
