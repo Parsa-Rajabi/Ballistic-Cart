@@ -1,6 +1,6 @@
 /**
  * BCLearningNetwork.com
- * Ballistic Cart   
+ * Ballistic Cart
  * Parsa Rajabi - ParsaRajabiPR@gmail.com
  * June 2018
  */
@@ -64,25 +64,27 @@ function init() {
 function update(event) {
     if (gameStarted) {
 //         cart.x = -160;
-        cart.y = 350;
+
         //moves cart with speed of variable "move"
         cart.x += move;
 //        console.log("Cart X is " + cart.x);
         loopCart();
 
+
+
         //direction = up = true
         // direction = down = false
-        if (direction){
-            ball.y -= velocity;   
-            console.log(velocity + "is going up")
-        }else{
-            console.log(velocity + "is going down")
-                ball.y += velocity;
-            if (ball.y > ground){
-                ball.y = ground;
-            }
-        }
-        if (ball.y  < 100){ 
+        // if (direction){
+        //     ball.y -= velocity;
+        //     console.log(velocity + "is going up")
+        // }else{
+        //     console.log(velocity + "is going down")
+        //         ball.y += velocity;
+        //     if (ball.y > ground){
+        //         ball.y = ground;
+        //     }
+        // }
+        if (ball.y  < 100){
         direction = false;
         }
 //            ball.y +=5;
@@ -108,13 +110,13 @@ function endGame() {
  */
 function initGraphics() {
 
-   
+
 
     //default planet is Earth
     stage.addChild(Earth);
     stage.addChild(cart);
 
-    //Box Selection   
+    //Box Selection
     var planetSelectHTML = document.createElement('select');
     planetSelectHTML.id = "planetSelect";
     planetSelectHTML.class = "overlayed";
@@ -130,7 +132,7 @@ function initGraphics() {
 
     stage.addChild(planetSelect);
 
-    //Box Selection   
+    //Box Selection
     var speedSelectHTML = document.createElement('select');
     speedSelectHTML.id = "speedSelect";
     speedSelectHTML.class = "overlayed";
@@ -155,10 +157,13 @@ function initGraphics() {
     ball.y = initialY;
     stage.addChild(ball);
 //    ball.visible = false;
-    
+
     fireButton.x = firePressedButton.x = 30;
     fireButton.y = firePressedButton.y = 170;
     stage.addChild(fireButton);
+
+
+    cart.y = 350;
 
     initMuteUnMuteButtons();
     initListeners();
@@ -169,7 +174,7 @@ function initGraphics() {
 
 
 function loopCart() {
-    //loops back the cart back around after exiting from one side to other  
+    //loops back the cart back around after exiting from one side to other
     cart.x += move;
     ball.x = cart.x + 55;
     if (cart.x >= 800) {
@@ -212,7 +217,7 @@ function addAll() {
 
 }
 
-//Adds the options to the drop down lists 
+//Adds the options to the drop down lists
 
 function addOptionsToSelect(select, options) {
     for (var i = 0; i < options.length; i++) {
@@ -310,19 +315,23 @@ function initListeners() {
     });
     firePressedButton.on("click", fire);
 
-    
+
 }
 
 function fire() {
     playSound("blast");
 //    ball.visible = true;
 //    console.log("Shots Fired!");
-//    ball.y -= earthGrav+60; 
+//    ball.y -= earthGrav+60;
 //    ball.y = intialY - 100* 5 + 0.5*-9.8;
-//    ball.x = Math.cos(40)+100; 
-    
+//    ball.x = Math.cos(40)+100;
+
 //    bulletTimer = setInterval(update(Event), 50);
 //		bulletTime = 0;
+
+  createjs.Tween.get(ball).to({y:50}, 1000, createjs.Ease.getPowOut(2)).to({y:initialY}, 1000, createjs.Ease.getPowIn(2))
+
+
 }
 
 
