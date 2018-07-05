@@ -13,17 +13,19 @@ var STAGE_WIDTH, STAGE_HEIGHT;
 var gameStarted = false;
 var move = 2.5; //m/s
 var selectY = 85; // works well on firefox
-var ball;
-var initialY = 399;
+//var ball;
+var minY = 381;
+var maxY = 260;
 //change to 417 if you want the ball to be behind "canon"
 var ground = 520;
 //this is backwards, as gravity decreases, ball moves faster 
 //starting mode is earth = 500, moon = 1500, mars = 1000 
-var gravity =750;
+var gravity = 750;
 var direction = true;
 // direction true = up, false = down
 var launchingPoint = true;
 // direction true = up, false = down
+
 
 
 var planetOptionValues = [];
@@ -65,9 +67,9 @@ function update(event) {
         //moves cart with speed of variable "move"
         cart.x += move;
         loopCart();
-        if (ball.y < 100) {
-            direction = false;
-        }
+//        if (ball.y < 100) {
+//            direction = false;
+//        }
     }
     stage.update(event);
 }
@@ -123,10 +125,12 @@ function initGraphics() {
     updateSelectPositions();
 
 
-    ball = new createjs.Shape();
-    ball.graphics.beginFill("red").drawCircle(0, 0, 15);
-    ball.y = initialY;
-    stage.addChild(ball);
+//    ball = new createjs.Shape();
+//    ball.graphics.beginFill("red").drawCircle(0, 0, 15);
+//    ball.y = minY;
+    fireBall.y = minY;
+    stage.addChild(fireBall);
+//    stage.addChild(ball);
 
 
     fireButton.x = firePressedButton.x = 30;
@@ -146,11 +150,14 @@ function initGraphics() {
 function loopCart() {
     //loops back the cart back around after exiting from one side to other
     cart.x += move;
-    ball.x = cart.x + 55;
+//    ball.x = cart.x + 55;
+    fireBall.x = cart.x + 36;
     if (cart.x >= 800) {
         console.log("In the loop");
-        ball.x = cart.x = -160;
-        ball.x = cart.x += move;
+//        ball.x = cart.x = -160;
+//        ball.x = cart.x += move;
+        fireBall.x = cart.x = -160;
+        fireBall.x = cart.x += move;
     }
 }
 
@@ -170,7 +177,8 @@ function updateSelectPositions() {
 }
 
 function addAll() {
-    stage.addChild(ball);
+    stage.addChild(fireBall);
+//    stage.addChild(ball);
     stage.addChild(cart);
     stage.addChild(fireButton);
     stage.addChild(unmuteButton);
@@ -197,6 +205,7 @@ function updatePlanet() {
 
     if (planetSelect.htmlElement.value == "Earth") {
         gravity = 750;
+        maxY = 260;
         console.log(gravity + "on Earth")
         stage.removeChild(Moon);
         stage.removeChild(Mars);
@@ -205,6 +214,7 @@ function updatePlanet() {
 
     } else if (planetSelect.htmlElement.value == "Moon") {
         gravity = 1750;
+        maxY = 145;
         console.log(gravity + "on Moon")
         stage.removeChild(Earth);
         stage.removeChild(Mars);
@@ -214,6 +224,7 @@ function updatePlanet() {
 
     } else if (planetSelect.htmlElement.value == "Mars") {
         gravity = 1250;
+        maxY = -15;
         console.log(gravity + "on Mars")
         stage.removeChild(Earth);
         stage.removeChild(Moon);
@@ -283,10 +294,11 @@ function initListeners() {
 
 function fire() {
     playSound("blast");
-    createjs.Tween.get(ball).to({
-        y: 75
+   
+    createjs.Tween.get(fireBall).to({
+        y: maxY
     }, gravity, createjs.Ease.getPowOut(2)).to({
-        y: initialY
+        y: minY
     }, gravity, createjs.Ease.getPowIn(2))
     //change gravity for the speed of the ball going up/down
     // y:75 is the upper limit and initialY is the lowerLimit for the ball starting/ending point
@@ -307,7 +319,7 @@ function fire() {
 // bitmap variables
 var muteButton, unmuteButton;
 var Earth, Mars, Moon;
-var cart;
+var cart, fireBall;
 var fireButton, firePressedButton;
 /*
  * Add files to be loaded here.
@@ -323,6 +335,9 @@ function setupManifest() {
     }, {
             src: "images/cart.png",
             id: "cart"
+    }, {
+            src: "images/ballA.png",
+            id: "ball"
     }, {
             src: "images/Earth_Background.png",
             id: "Earth"
@@ -377,6 +392,8 @@ function handleFileLoad(event) {
         Moon = new createjs.Bitmap(event.result);
     } else if (event.item.id == "cart") {
         cart = new createjs.Bitmap(event.result);
+    } else if (event.item.id == "ball") {
+        fireBall = new createjs.Bitmap(event.result);
     } else if (event.item.id == "fireButton") {
         fireButton = new createjs.Bitmap(event.result);
     } else if (event.item.id == "firePressedButton") {
