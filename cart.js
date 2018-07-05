@@ -321,8 +321,8 @@ function fire() {
 //    ball.y = intialY - 100* 5 + 0.5*-9.8;
 //    ball.x = Math.cos(40)+100; 
     
-    bulletTimer = setInterval(update(Event), 50);
-		bulletTime = 0;
+//    bulletTimer = setInterval(update(Event), 50);
+//		bulletTime = 0;
 }
 
 
