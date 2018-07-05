@@ -1,7 +1,7 @@
 /**
  * BCLearningNetwork.com
  * Ballistic Cart
- * Parsa Rajabi - ParsaRajabiPR@gmail.com
+ * Parsa Rajabi - ParsaRajabiPR@gmail.com & Colin Bernard Colinjbernad@gmail.com
  * June 2018
  */
 
@@ -11,16 +11,15 @@ var mute = false;
 var FPS = 20;
 var STAGE_WIDTH, STAGE_HEIGHT;
 var gameStarted = false;
-var move = 5; //m/s
-var velocity = 10;
+var move = 2.5; //m/s
 var selectY = 85; // works well on firefox
 var ball;
-var initialY = 397;
+var initialY = 399;
+//change to 417 if you want the ball to be behind "canon"
 var ground = 520;
-var earthGrav = 9.81;
-var moonGrav = 1.62;
-var marsGrav = 3.71;
-var bulletTimer;
+//this is backwards, as gravity decreases, ball moves faster 
+//starting mode is earth = 500, moon = 1500, mars = 1000 
+var gravity =750;
 var direction = true;
 // direction true = up, false = down
 var launchingPoint = true;
@@ -63,37 +62,14 @@ function init() {
 
 function update(event) {
     if (gameStarted) {
-//         cart.x = -160;
-
         //moves cart with speed of variable "move"
         cart.x += move;
-//        console.log("Cart X is " + cart.x);
         loopCart();
-
-
-
-        //direction = up = true
-        // direction = down = false
-        // if (direction){
-        //     ball.y -= velocity;
-        //     console.log(velocity + "is going up")
-        // }else{
-        //     console.log(velocity + "is going down")
-        //         ball.y += velocity;
-        //     if (ball.y > ground){
-        //         ball.y = ground;
-        //     }
-        // }
-        if (ball.y  < 100){
-        direction = false;
+        if (ball.y < 100) {
+            direction = false;
         }
-//            ball.y +=5;
-//    bulletTime = bulletTime + 50; //milliseconds past since button hit
-//	t = bulletTime * 0.00015; //scaling factor to slow down time
-
     }
-            stage.update(event);
-
+    stage.update(event);
 }
 
 /*
@@ -104,14 +80,10 @@ function endGame() {
 }
 
 
-
 /*
  * Place graphics and add them to the stage.
  */
 function initGraphics() {
-
-
-
     //default planet is Earth
     stage.addChild(Earth);
     stage.addChild(cart);
@@ -153,15 +125,13 @@ function initGraphics() {
 
     ball = new createjs.Shape();
     ball.graphics.beginFill("red").drawCircle(0, 0, 15);
-//    ball.x = 500;
     ball.y = initialY;
     stage.addChild(ball);
-//    ball.visible = false;
+
 
     fireButton.x = firePressedButton.x = 30;
     fireButton.y = firePressedButton.y = 170;
     stage.addChild(fireButton);
-
 
     cart.y = 350;
 
@@ -192,28 +162,23 @@ function updateSelectPositions() {
     if (isChrome) {
         selectY = 85;
     }
-
     planetSelect.x = gameCanvas.getBoundingClientRect().left + 125;
     planetSelect.y = gameCanvas.getBoundingClientRect().top + selectY;
 
-
     speedSelect.x = gameCanvas.getBoundingClientRect().left + 125;
     speedSelect.y = gameCanvas.getBoundingClientRect().top + selectY + 55;
-
-
-
 }
 
 function addAll() {
+    stage.addChild(ball);
     stage.addChild(cart);
     stage.addChild(fireButton);
     stage.addChild(unmuteButton);
-    stage.addChild(ball);
 
-//    stage.addChildAt(Cart,0);
-//    stage.addChildAt(fireButton,);
+    //    stage.addChildAt(Cart,0);
+    //    stage.addChildAt(fireButton,);
 
-//    initMuteUnMuteButtons();
+    //    initMuteUnMuteButtons();
 
 }
 
@@ -231,16 +196,16 @@ function addOptionsToSelect(select, options) {
 function updatePlanet() {
 
     if (planetSelect.htmlElement.value == "Earth") {
-        velocity = 15;
-        console.log(velocity + "on Earth")
+        gravity = 750;
+        console.log(gravity + "on Earth")
         stage.removeChild(Moon);
         stage.removeChild(Mars);
         stage.addChild(Earth);
         addAll();
 
     } else if (planetSelect.htmlElement.value == "Moon") {
-        velocity = 5;
-        console.log(velocity + "on Moon")
+        gravity = 1750;
+        console.log(gravity + "on Moon")
         stage.removeChild(Earth);
         stage.removeChild(Mars);
         stage.addChild(Moon);
@@ -248,8 +213,8 @@ function updatePlanet() {
 
 
     } else if (planetSelect.htmlElement.value == "Mars") {
-        velocity = 10;
-        console.log(velocity + "on Mars")
+        gravity = 1250;
+        console.log(gravity + "on Mars")
         stage.removeChild(Earth);
         stage.removeChild(Moon);
         stage.addChild(Mars);
@@ -261,19 +226,17 @@ function updatePlanet() {
 function updateSpeed() {
 
     if (speedSelect.htmlElement.value == "Slow") {
-        move = 8;
+        move = 2.5;
         loopCart();
         console.log("Speed is now slow")
 
     } else if (speedSelect.htmlElement.value == "Moderate") {
-        move = 16;
+        move = 5;
         loopCart();
         console.log("Speed is now moderate")
 
-
-
     } else if (speedSelect.htmlElement.value == "Fast") {
-        move = 25;
+        move = 10;
         loopCart();
         console.log("Speed is now fast")
 
@@ -320,20 +283,23 @@ function initListeners() {
 
 function fire() {
     playSound("blast");
-//    ball.visible = true;
-//    console.log("Shots Fired!");
-//    ball.y -= earthGrav+60;
-//    ball.y = intialY - 100* 5 + 0.5*-9.8;
-//    ball.x = Math.cos(40)+100;
-
-//    bulletTimer = setInterval(update(Event), 50);
-//		bulletTime = 0;
-
-  createjs.Tween.get(ball).to({y:50}, 1000, createjs.Ease.getPowOut(2)).to({y:initialY}, 1000, createjs.Ease.getPowIn(2))
+    createjs.Tween.get(ball).to({
+        y: 75
+    }, gravity, createjs.Ease.getPowOut(2)).to({
+        y: initialY
+    }, gravity, createjs.Ease.getPowIn(2))
+    //change gravity for the speed of the ball going up/down
+    // y:75 is the upper limit and initialY is the lowerLimit for the ball starting/ending point
+    //to the power of 2 goes up PowOut
+    //In = increase 
+    //PowIn = coming down
+    //50 and 1000 change the gravity
+    // grav increase, y goes up
+    // time increases 
+    //annon functions getPowOut.call(function)
 
 
 }
-
 
 
 //////////////////////// PRELOADJS FUNCTIONS
@@ -351,10 +317,10 @@ function setupManifest() {
         {
             src: "sounds/click.mp3",
             id: "click"
-    },{
+    }, {
             src: "sounds/blast.mp3",
             id: "blast"
-    },{
+    }, {
             src: "images/cart.png",
             id: "cart"
     }, {
