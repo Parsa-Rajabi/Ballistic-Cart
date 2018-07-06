@@ -7,15 +7,20 @@
 
 //// VARIABLES ////
 
+///All variables are set to the Earth default, the game will start with these values, user can change it as they desire///
+
 var mute = false;
 var FPS = 20;
 var STAGE_WIDTH, STAGE_HEIGHT;
 var gameStarted = false;
+//move is the speed of the cart moving, changes based on planet
 var move = 2.5; //m/s
+//to keep the drop down menus in place
 var selectY = 85; // works well on firefox
 
 // the min and max of the Y, min remains constant, max will change depending on the planet
 var minY = 381;
+//default is 260 
 var maxY = 260;
 //change to 417 if you want the ball to be behind "canon"
 var ground = 520;
@@ -55,6 +60,7 @@ function init() {
 
     stage.update();
 }
+
 /*
  * Main update loop.
  */
@@ -71,14 +77,15 @@ function update(event) {
 /*
  * Ends the game.
  */
+
 function endGame() {
     gameStarted = false;
 }
 
-
 /*
  * Place graphics and add them to the stage.
  */
+
 function initGraphics() {
     //default planet is Earth
     stage.addChild(Earth);
@@ -98,6 +105,7 @@ function initGraphics() {
     document.body.appendChild(planetSelectHTML);
     planetSelect = new createjs.DOMElement(planetSelectHTML);
 
+    //adds the planet selection to the screen
     stage.addChild(planetSelect);
 
     //Box Selection
@@ -113,7 +121,8 @@ function initGraphics() {
     speedSelectHTML.onchange = updateSpeed;
     document.body.appendChild(speedSelectHTML);
     speedSelect = new createjs.DOMElement(speedSelectHTML);
-
+    
+    //adds the speed selection to the screen
     stage.addChild(speedSelect);
 
     updateSelectPositions();
@@ -205,7 +214,6 @@ function updatePlanet() {
         stage.addChild(Moon);
         addAll();
 
-
     } else if (planetSelect.htmlElement.value == "Mars") {
         gravity = 1250;
         maxY = 145;
@@ -217,6 +225,7 @@ function updatePlanet() {
     }
 }
 
+//by calling this function, the speed of the cart is changed and it also called the function loopCart where all the images are reAdded back to the screen
 function updateSpeed() {
 
     if (speedSelect.htmlElement.value == "Slow") {
@@ -256,6 +265,7 @@ function initMuteUnMuteButtons() {
 /*
  * Add listeners to objects.
  */
+
 function initListeners() {
 
     fireButton.on("mouseover", function () {
@@ -271,6 +281,7 @@ function initListeners() {
     firePressedButton.on("click", fire);
 }
 
+//the fireButton triggers this function, cases the ball to go up
 function fire() {
     
     //check if the ball is at minY, then fire the ball.
