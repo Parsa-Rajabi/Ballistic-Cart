@@ -13,7 +13,8 @@ var STAGE_WIDTH, STAGE_HEIGHT;
 var gameStarted = false;
 var move = 2.5; //m/s
 var selectY = 85; // works well on firefox
-//var ball;
+
+// the min and max of the Y, min remains constant, max will change depending on the planet
 var minY = 381;
 var maxY = 260;
 //change to 417 if you want the ball to be behind "canon"
@@ -21,18 +22,14 @@ var ground = 520;
 //this is backwards, as gravity decreases, ball moves faster 
 //starting mode is earth = 500, moon = 1500, mars = 1000 
 var gravity = 750;
-var direction = true;
-// direction true = up, false = down
-var launchingPoint = true;
-// direction true = up, false = down
 
-
-
+//the options for planets
 var planetOptionValues = [];
 planetOptionValues['Earth'];
 planetOptionValues['Moon'];
 planetOptionValues['Mars'];
 
+//the options for speed
 var speedOptionValues = [];
 speedOptionValues['Slow'];
 speedOptionValues['Moderate'];
@@ -67,9 +64,6 @@ function update(event) {
         //moves cart with speed of variable "move"
         cart.x += move;
         loopCart();
-        //        if (ball.y < 100) {
-        //            direction = false;
-        //        }
     }
     stage.update(event);
 }
@@ -124,19 +118,16 @@ function initGraphics() {
 
     updateSelectPositions();
 
-
-    //    ball = new createjs.Shape();
-    //    ball.graphics.beginFill("red").drawCircle(0, 0, 15);
-    //    ball.y = minY;
+    //position of ball
     fireBall.y = minY;
     stage.addChild(fireBall);
-    //    stage.addChild(ball);
 
-
+    //positioning of the fire button
     fireButton.x = firePressedButton.x = 30;
     fireButton.y = firePressedButton.y = 170;
     stage.addChild(fireButton);
 
+    //position of Cart
     cart.y = 350;
 
     initMuteUnMuteButtons();
@@ -150,12 +141,10 @@ function initGraphics() {
 function loopCart() {
     //loops back the cart back around after exiting from one side to other
     cart.x += move;
-    //    ball.x = cart.x + 55;
+    //position the fireBall at the correct x according to the cart
     fireBall.x = cart.x + 36;
     if (cart.x >= 800) {
-        console.log("In the loop");
-        //        ball.x = cart.x = -160;
-        //        ball.x = cart.x += move;
+        //cart keeps moving
         fireBall.x = cart.x = -160;
         fireBall.x = cart.x += move;
     }
@@ -165,6 +154,7 @@ function loopCart() {
  * Maintain positions of select HTML elements when page is zoomed or canvas is moved
  */
 
+//updates the positions
 function updateSelectPositions() {
     if (isChrome) {
         selectY = 85;
@@ -176,18 +166,12 @@ function updateSelectPositions() {
     speedSelect.y = gameCanvas.getBoundingClientRect().top + selectY + 55;
 }
 
+//reAdds all the elements to the game after the user changes the planet
 function addAll() {
     stage.addChild(fireBall);
-    //    stage.addChild(ball);
     stage.addChild(cart);
     stage.addChild(fireButton);
     stage.addChild(unmuteButton);
-
-    //    stage.addChildAt(Cart,0);
-    //    stage.addChildAt(fireButton,);
-
-    //    initMuteUnMuteButtons();
-
 }
 
 //Adds the options to the drop down lists
@@ -203,10 +187,11 @@ function addOptionsToSelect(select, options) {
 
 function updatePlanet() {
 
+    //change the gravity for each planet to +/- the speed of the ball floating in the air. The less the number, the fast the ball moves
+    //change the maxY to determine when the ball will "peak"
     if (planetSelect.htmlElement.value == "Earth") {
-        gravity = 750;
+        gravity = 750; 
         maxY = 260;
-        console.log(gravity + "on Earth")
         stage.removeChild(Moon);
         stage.removeChild(Mars);
         stage.addChild(Earth);
@@ -215,7 +200,6 @@ function updatePlanet() {
     } else if (planetSelect.htmlElement.value == "Moon") {
         gravity = 1750;
         maxY = -5;
-        console.log(gravity + "on Moon")
         stage.removeChild(Earth);
         stage.removeChild(Mars);
         stage.addChild(Moon);
@@ -225,7 +209,6 @@ function updatePlanet() {
     } else if (planetSelect.htmlElement.value == "Mars") {
         gravity = 1250;
         maxY = 145;
-        console.log(gravity + "on Mars")
         stage.removeChild(Earth);
         stage.removeChild(Moon);
         stage.addChild(Mars);
@@ -237,20 +220,17 @@ function updatePlanet() {
 function updateSpeed() {
 
     if (speedSelect.htmlElement.value == "Slow") {
-        move = 2.5;
-        loopCart();
-        console.log("Speed is now slow")
+        move = 2.5; //cart speed 
+        loopCart(); 
+
 
     } else if (speedSelect.htmlElement.value == "Moderate") {
-        move = 5;
+        move = 5; //cart speed 
         loopCart();
-        console.log("Speed is now moderate")
 
     } else if (speedSelect.htmlElement.value == "Fast") {
-        move = 10;
+        move = 10; //cart speed 
         loopCart();
-        console.log("Speed is now fast")
-
     }
 }
 /*
@@ -287,36 +267,24 @@ function initListeners() {
         stage.addChild(fireButton);
         stage.removeChild(firePressedButton);
     });
+    //once pressed, the fire function will be called 
     firePressedButton.on("click", fire);
-
-
 }
 
 function fire() {
     
+    //check if the ball is at minY, then fire the ball.
     if (fireBall.y == minY){
     playSound("blast");
 
+    //change gravity for the speed of the ball going up/down
     createjs.Tween.get(fireBall).to({
         y: maxY
     }, gravity, createjs.Ease.getPowOut(2)).to({
         y: minY
     }, gravity, createjs.Ease.getPowIn(2))
         }
-    
-    //change gravity for the speed of the ball going up/down
-    // y:75 is the upper limit and initialY is the lowerLimit for the ball starting/ending point
-    //to the power of 2 goes up PowOut
-    //In = increase 
-    //PowIn = coming down
-    //50 and 1000 change the gravity
-    // grav increase, y goes up
-    // time increases 
-    //annon functions getPowOut.call(function)
-
-
 }
-
 
 //////////////////////// PRELOADJS FUNCTIONS
 
@@ -366,7 +334,6 @@ function setupManifest() {
 		},
  	];
 }
-
 
 function startPreload() {
     preload = new createjs.LoadQueue(true);
