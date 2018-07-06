@@ -67,9 +67,9 @@ function update(event) {
         //moves cart with speed of variable "move"
         cart.x += move;
         loopCart();
-//        if (ball.y < 100) {
-//            direction = false;
-//        }
+        //        if (ball.y < 100) {
+        //            direction = false;
+        //        }
     }
     stage.update(event);
 }
@@ -125,12 +125,12 @@ function initGraphics() {
     updateSelectPositions();
 
 
-//    ball = new createjs.Shape();
-//    ball.graphics.beginFill("red").drawCircle(0, 0, 15);
-//    ball.y = minY;
+    //    ball = new createjs.Shape();
+    //    ball.graphics.beginFill("red").drawCircle(0, 0, 15);
+    //    ball.y = minY;
     fireBall.y = minY;
     stage.addChild(fireBall);
-//    stage.addChild(ball);
+    //    stage.addChild(ball);
 
 
     fireButton.x = firePressedButton.x = 30;
@@ -150,12 +150,12 @@ function initGraphics() {
 function loopCart() {
     //loops back the cart back around after exiting from one side to other
     cart.x += move;
-//    ball.x = cart.x + 55;
+    //    ball.x = cart.x + 55;
     fireBall.x = cart.x + 36;
     if (cart.x >= 800) {
         console.log("In the loop");
-//        ball.x = cart.x = -160;
-//        ball.x = cart.x += move;
+        //        ball.x = cart.x = -160;
+        //        ball.x = cart.x += move;
         fireBall.x = cart.x = -160;
         fireBall.x = cart.x += move;
     }
@@ -178,7 +178,7 @@ function updateSelectPositions() {
 
 function addAll() {
     stage.addChild(fireBall);
-//    stage.addChild(ball);
+    //    stage.addChild(ball);
     stage.addChild(cart);
     stage.addChild(fireButton);
     stage.addChild(unmuteButton);
@@ -214,7 +214,7 @@ function updatePlanet() {
 
     } else if (planetSelect.htmlElement.value == "Moon") {
         gravity = 1750;
-        maxY = 145;
+        maxY = -5;
         console.log(gravity + "on Moon")
         stage.removeChild(Earth);
         stage.removeChild(Mars);
@@ -224,7 +224,7 @@ function updatePlanet() {
 
     } else if (planetSelect.htmlElement.value == "Mars") {
         gravity = 1250;
-        maxY = -15;
+        maxY = 145;
         console.log(gravity + "on Mars")
         stage.removeChild(Earth);
         stage.removeChild(Moon);
@@ -293,13 +293,17 @@ function initListeners() {
 }
 
 function fire() {
+    
+    if (fireBall.y == minY){
     playSound("blast");
-   
+
     createjs.Tween.get(fireBall).to({
         y: maxY
     }, gravity, createjs.Ease.getPowOut(2)).to({
         y: minY
     }, gravity, createjs.Ease.getPowIn(2))
+        }
+    
     //change gravity for the speed of the ball going up/down
     // y:75 is the upper limit and initialY is the lowerLimit for the ball starting/ending point
     //to the power of 2 goes up PowOut
